@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WhatsApp Work Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b141a;
+      color: #e9edef;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 1.5rem;
+    }
+    .card {
+      background: #111b21;
+      border: 1px solid #222e35;
+      border-radius: 14px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+    }
+    .badge {
+      display: inline-block;
+      background: #00a884;
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2rem;
+    }
+    .spinner {
+      border: 4px solid #222e35;
+      border-top: 4px solid #00a884;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #e9edef; font-weight: 600; }
+    p { font-size: 0.95rem; color: #8696a0; margin-bottom: 1.5rem; line-height: 1.5; }
+    .btn {
+      display: inline-block;
+      background: #00a884;
+      color: #fff;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #06cf9c; }
+    #wa-frame {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #0b141a;
+    }
+    .control-pill {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 999999;
+      background: rgba(17, 27, 33, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid #222e35;
+      border-radius: 20px;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: #8696a0;
+      transition: opacity 0.2s;
+      opacity: 0.35;
+    }
+    .control-pill:hover {
+      opacity: 1;
+    }
+    .control-pill a, .control-pill button {
+      color: #00a884;
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .control-pill a:hover, .control-pill button:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="card">
+      <div class="badge">WhatsApp Live Console</div>
+      <div class="spinner" id="spinner"></div>
+      <h1 id="title">Connecting to WhatsApp...</h1>
+      <p id="status">Resolving active secure tunnel session...</p>
+      <div id="action-area" style="display:none;">
+        <button class="btn" onclick="location.reload()">Retry Connection</button>
+      </div>
+      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #8696a0;">
+        Looking for terminal? <a href="https://topjohnnywu.github.io/term/" style="color:#00a884; text-decoration:none;">Go to Web Terminal</a>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="wa-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
+
+  <div class="control-pill" id="controls" style="display:none;">
+    <span>WhatsApp Console</span>
+    <button onclick="reloadFrame()" title="Reload Session">⟳ Reload</button>
+    <a id="popout-link" href="#" target="_blank" title="Open in direct tab">↗ Popout</a>
+    <a href="https://topjohnnywu.github.io/term/" title="Switch to Terminal">Terminal</a>
+    <a href="https://topjohnnywu.github.io/app/" title="Switch to DO Insight">DO Insight</a>
+  </div>
+
+  <script>
+    const GIST_ID = "9b4f25e801a2358e9357661b08a2f9ee";
+    let activeUrl = null;
+
+    function reloadFrame() {
+      const frame = document.getElementById("wa-frame");
+      if (activeUrl) {
+        frame.src = activeUrl + "?t=" + Date.now();
+      } else {
+        location.reload();
+      }
+    }
+
+    async function init() {
+      const statusEl = document.getElementById("status");
+      const titleEl = document.getElementById("title");
+      const actionEl = document.getElementById("action-area");
+      const spinner = document.getElementById("spinner");
+      const frame = document.getElementById("wa-frame");
+      const loader = document.getElementById("loader");
+      const controls = document.getElementById("controls");
+      const popoutLink = document.getElementById("popout-link");
+
+      try {
+        const res = await fetch("https://api.github.com/gists/" + GIST_ID + "?nocache=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const url = (data.files && data.files["wa_tunnel.txt"]) ? data.files["wa_tunnel.txt"].content.trim() : null;
+
+        if (!url || !url.startsWith("http")) {
+          titleEl.innerText = "WhatsApp Server Offline";
+          statusEl.innerText = 'WhatsApp Chat server is currently offline. Please run "whatsapp-server" in Termux to start it.';
+          spinner.style.display = "none";
+          actionEl.style.display = "block";
+          return;
+        }
+
+        activeUrl = url;
+        popoutLink.href = url;
+        frame.src = url;
+
+        frame.onload = () => {
+          loader.style.display = "none";
+          frame.style.display = "block";
+          controls.style.display = "flex";
+        };
+
+        // Fallback in case onload is suppressed across origins
+        setTimeout(() => {
+          loader.style.display = "none";
+          frame.style.display = "block";
+          controls.style.display = "flex";
+        }, 1200);
+
+      } catch (err) {
+        titleEl.innerText = "Connection Failed";
+        statusEl.innerText = "Error resolving session: " + err.message;
+        spinner.style.display = "none";
+        actionEl.style.display = "block";
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
