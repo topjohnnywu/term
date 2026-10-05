@@ -2,19 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Termux Web Terminal</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       background: #0d1117;
       color: #c9d1d9;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #loader {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      height: 100%;
+      padding: 1.5rem;
     }
     .card {
       background: #161b22;
@@ -46,28 +52,102 @@
       padding: 0.75rem 1.5rem;
       border-radius: 6px;
       text-decoration: none;
+      border: none;
+      cursor: pointer;
       transition: background 0.2s;
     }
     .btn:hover { background: #2ea043; }
+    #term-frame {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
+    .control-pill {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 999999;
+      background: rgba(22, 27, 34, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: #8b949e;
+      transition: opacity 0.2s;
+      opacity: 0.35;
+    }
+    .control-pill:hover {
+      opacity: 1;
+    }
+    .control-pill a, .control-pill button {
+      color: #58a6ff;
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .control-pill a:hover, .control-pill button:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="spinner" id="spinner"></div>
-    <h1>Connecting to Terminal...</h1>
-    <p id="status">Resolving active Cloudflare session...</p>
-    <div id="action-area" style="display:none;">
-      <a id="manual-link" class="btn" href="#">Open Terminal</a>
+  <div id="loader">
+    <div class="card">
+      <div class="spinner" id="spinner"></div>
+      <h1 id="title">Connecting to Terminal...</h1>
+      <p id="status">Connecting to active Cloudflare session...</p>
+      <div id="action-area" style="display:none;">
+        <button class="btn" onclick="location.reload()">Retry Connection</button>
+      </div>
+      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #6e7681;">
+        Looking for app? <a href="https://topjohnnywu.github.io/app/" style="color:#58a6ff; text-decoration:none;">Go to DO Insight System</a>
+      </div>
     </div>
+  </div>
+
+  <iframe id="term-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
+
+  <div class="control-pill" id="controls" style="display:none;">
+    <span>Terminal</span>
+    <button onclick="reloadFrame()" title="Reload Session">⟳ Reload</button>
+    <a id="popout-link" href="#" target="_blank" title="Open in direct tab">↗ Popout</a>
+    <a href="https://topjohnnywu.github.io/app/" title="Switch to App">App</a>
   </div>
 
   <script>
     const GIST_ID = '9b4f25e801a2358e9357661b08a2f9ee';
+    let activeUrl = null;
+
+    function reloadFrame() {
+      const frame = document.getElementById('term-frame');
+      if (activeUrl) {
+        frame.src = activeUrl + "?t=" + Date.now();
+      } else {
+        location.reload();
+      }
+    }
+
     async function init() {
       const statusEl = document.getElementById('status');
+      const titleEl = document.getElementById('title');
       const actionEl = document.getElementById('action-area');
-      const manualLink = document.getElementById('manual-link');
       const spinner = document.getElementById('spinner');
+      const frame = document.getElementById('term-frame');
+      const loader = document.getElementById('loader');
+      const controls = document.getElementById('controls');
+      const popoutLink = document.getElementById('popout-link');
 
       try {
         const res = await fetch('https://api.github.com/gists/' + GIST_ID + '?nocache=' + Date.now(), { cache: 'no-store' });
@@ -76,20 +156,35 @@
         const url = (data.files && data.files['tunnel.txt']) ? data.files['tunnel.txt'].content.trim() : null;
 
         if (!url || !url.startsWith('http')) {
+          titleEl.innerText = 'Terminal Offline';
           statusEl.innerText = 'Terminal server is currently offline. Please run "run terminal server" on Android.';
           spinner.style.display = 'none';
+          actionEl.style.display = 'block';
           return;
         }
 
-        statusEl.innerHTML = 'Connecting to:<br><small style="color:#58a6ff;">' + url + '</small>';
-        manualLink.href = url;
-        actionEl.style.display = 'block';
+        activeUrl = url;
+        popoutLink.href = url;
+        frame.src = url;
 
-        // Auto-redirect
-        window.location.replace(url);
+        frame.onload = () => {
+          loader.style.display = 'none';
+          frame.style.display = 'block';
+          controls.style.display = 'flex';
+        };
+
+        // Fallback in case onload is suppressed across origins
+        setTimeout(() => {
+          loader.style.display = 'none';
+          frame.style.display = 'block';
+          controls.style.display = 'flex';
+        }, 1200);
+
       } catch (err) {
+        titleEl.innerText = 'Connection Failed';
         statusEl.innerText = 'Error fetching session: ' + err.message;
         spinner.style.display = 'none';
+        actionEl.style.display = 'block';
       }
     }
     init();
