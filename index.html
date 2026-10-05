@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Termux Web Terminal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+    .spinner {
+      border: 4px solid #21262d;
+      border-top: 4px solid #58a6ff;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #f0f6fc; }
+    p { font-size: 0.95rem; color: #8b949e; margin-bottom: 1.5rem; line-height: 1.5; }
+    .btn {
+      display: inline-block;
+      background: #238636;
+      color: #fff;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #2ea043; }
+    .credentials {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: monospace;
+      color: #79c0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner" id="spinner"></div>
+    <h1>Connecting to Terminal...</h1>
+    <p id="status">Resolving active Cloudflare session...</p>
+    <div id="action-area" style="display:none;">
+      <a id="manual-link" class="btn" href="#">Open Terminal</a>
+    </div>
+    <div class="credentials">
+      User: <strong>admin</strong> &nbsp;|&nbsp; Pass: <strong>termux2026</strong>
+    </div>
+  </div>
+
+  <script>
+    const GIST_ID = '9b4f25e801a2358e9357661b08a2f9ee';
+    async function init() {
+      const statusEl = document.getElementById('status');
+      const actionEl = document.getElementById('action-area');
+      const manualLink = document.getElementById('manual-link');
+      const spinner = document.getElementById('spinner');
+
+      try {
+        const res = await fetch('https://api.github.com/gists/' + GIST_ID + '?nocache=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const url = (data.files && data.files['tunnel.txt']) ? data.files['tunnel.txt'].content.trim() : null;
+
+        if (!url || !url.startsWith('http')) {
+          statusEl.innerText = 'Terminal server is currently offline. Please run "run terminal server" on Android.';
+          spinner.style.display = 'none';
+          return;
+        }
+
+        statusEl.innerHTML = 'Connecting to:<br><small style="color:#58a6ff;">' + url + '</small>';
+        manualLink.href = url;
+        actionEl.style.display = 'block';
+
+        // Auto-redirect
+        window.location.replace(url);
+      } catch (err) {
+        statusEl.innerText = 'Error fetching session: ' + err.message;
+        spinner.style.display = 'none';
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
