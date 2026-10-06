@@ -69,26 +69,27 @@
     }
     .control-pill {
       position: fixed;
-      bottom: 12px;
-      right: 12px;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 999999;
       background: rgba(22, 27, 34, 0.85);
       backdrop-filter: blur(8px);
       border: 1px solid #30363d;
       border-radius: 20px;
-      padding: 4px 10px;
+      padding: 4px 14px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
       font-size: 12px;
       color: #8b949e;
       transition: opacity 0.2s;
-      opacity: 0.35;
+      opacity: 0.4;
     }
     .control-pill:hover {
       opacity: 1;
     }
-    .control-pill a, .control-pill button {
+    .control-pill button {
       color: #58a6ff;
       text-decoration: none;
       background: transparent;
@@ -97,7 +98,7 @@
       font-size: 12px;
       font-family: inherit;
     }
-    .control-pill a:hover, .control-pill button:hover {
+    .control-pill button:hover {
       text-decoration: underline;
     }
   </style>
@@ -120,11 +121,7 @@
   <iframe id="term-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
 
   <div class="control-pill" id="controls" style="display:none;">
-    <span>Terminal</span>
     <button onclick="reloadFrame()" title="Reload Session">⟳ Reload</button>
-    <a id="popout-link" href="#" target="_blank" title="Open in direct tab">↗ Popout</a>
-    <a href="https://topjohnnywu.github.io/app/" title="Switch to App">App</a>
-    <a href="wa.html" title="Switch to WhatsApp Chat">WhatsApp</a>
   </div>
 
   <script>
@@ -148,7 +145,6 @@
       const frame = document.getElementById('term-frame');
       const loader = document.getElementById('loader');
       const controls = document.getElementById('controls');
-      const popoutLink = document.getElementById('popout-link');
 
       try {
         const res = await fetch('https://api.github.com/gists/' + GIST_ID + '?nocache=' + Date.now(), { cache: 'no-store' });
@@ -165,7 +161,6 @@
         }
 
         activeUrl = url;
-        popoutLink.href = url;
         frame.src = url;
 
         frame.onload = () => {
