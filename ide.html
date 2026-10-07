@@ -182,31 +182,9 @@
           return;
         }
 
-        activeUrl = url;
-        popoutLink.href = url;
-        
-        // Directly redirect or load in frame
-        // If query has direct=1 or inside iframe issues, redirect directly
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("direct") === "1") {
-          window.location.href = url;
-          return;
-        }
-
-        frame.src = url;
-
-        frame.onload = () => {
-          loader.style.display = "none";
-          frame.style.display = "block";
-          controls.style.display = "flex";
-        };
-
-        // Fallback for cross-origin iframe security
-        setTimeout(() => {
-          loader.style.display = "none";
-          frame.style.display = "block";
-          controls.style.display = "flex";
-        }, 1200);
+        // Redirect top-level window directly so cookies, auth, and clipboard work seamlessly
+        window.location.replace(url);
+        return;
 
       } catch (err) {
         badgeEl.className = "badge offline";
