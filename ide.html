@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WhatsApp Work Portal</title>
+  <title>Cloud IDE Portal</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #0b141a;
-      color: #e9edef;
+      background: #0d1117;
+      color: #c9d1d9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     #loader {
@@ -23,8 +23,8 @@
       padding: 1.5rem;
     }
     .card {
-      background: #111b21;
-      border: 1px solid #222e35;
+      background: #161b22;
+      border: 1px solid #30363d;
       border-radius: 14px;
       padding: 2.5rem;
       max-width: 480px;
@@ -34,7 +34,7 @@
     }
     .badge {
       display: inline-block;
-      background: #00a884;
+      background: #238636;
       color: #ffffff;
       font-size: 0.75rem;
       font-weight: 700;
@@ -44,9 +44,12 @@
       letter-spacing: 0.05em;
       margin-bottom: 1.2rem;
     }
+    .badge.offline {
+      background: #da3633;
+    }
     .spinner {
-      border: 4px solid #222e35;
-      border-top: 4px solid #00a884;
+      border: 4px solid #21262d;
+      border-top: 4px solid #2f81f7;
       border-radius: 50%;
       width: 48px;
       height: 48px;
@@ -54,91 +57,89 @@
       margin: 0 auto 1.5rem;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #e9edef; font-weight: 600; }
-    p { font-size: 0.95rem; color: #8696a0; margin-bottom: 1.5rem; line-height: 1.5; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #f0f6fc; font-weight: 600; }
+    p { font-size: 0.95rem; color: #8b949e; margin-bottom: 1.5rem; line-height: 1.5; }
     .btn {
       display: inline-block;
-      background: #00a884;
-      color: #fff;
-      font-weight: 600;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
+      background: #238636;
+      color: #ffffff;
       text-decoration: none;
-      border: none;
-      cursor: pointer;
+      padding: 0.65rem 1.4rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
       transition: background 0.2s;
     }
-    .btn:hover { background: #06cf9c; }
-    #wa-frame {
+    .btn:hover { background: #2ea043; }
+    .btn-secondary {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      margin-left: 0.5rem;
+    }
+    .btn-secondary:hover { background: #30363d; }
+    #action-area { display: none; margin-top: 1rem; }
+    #ide-frame {
       display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
       border: none;
-      background: #0b141a;
     }
-    .control-pill {
+    #controls {
+      display: none;
       position: fixed;
       bottom: 12px;
       right: 12px;
-      z-index: 999999;
-      background: rgba(17, 27, 33, 0.85);
+      z-index: 9999;
+      background: rgba(22, 27, 34, 0.85);
       backdrop-filter: blur(8px);
-      border: 1px solid #222e35;
+      border: 1px solid #30363d;
       border-radius: 20px;
-      padding: 4px 12px;
-      display: flex;
+      padding: 4px 8px;
+      gap: 6px;
       align-items: center;
-      gap: 12px;
-      font-size: 12px;
-      color: #8696a0;
-      transition: opacity 0.2s;
-      opacity: 0.35;
     }
-    .control-pill:hover {
-      opacity: 1;
-    }
-    .control-pill a, .control-pill button {
-      color: #00a884;
-      text-decoration: none;
+    #controls a, #controls button {
       background: transparent;
       border: none;
+      color: #8b949e;
       cursor: pointer;
       font-size: 12px;
-      font-family: inherit;
+      padding: 4px 8px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
-    .control-pill a:hover, .control-pill button:hover {
-      text-decoration: underline;
+    #controls a:hover, #controls button:hover {
+      color: #f0f6fc;
+      background: #30363d;
     }
   </style>
 </head>
 <body>
   <div id="loader">
     <div class="card">
-      <div class="badge">WhatsApp Live Console</div>
-      <div class="spinner" id="spinner"></div>
-      <h1 id="title">Connecting to WhatsApp...</h1>
-      <p id="status">Resolving active secure tunnel session...</p>
-      <div id="action-area" style="display:none;">
-        <button class="btn" onclick="location.reload()">Retry Connection</button>
-      </div>
-      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #8696a0;">
-        Looking for terminal? <a href="https://topjohnnywu.github.io/term/" style="color:#00a884; text-decoration:none;">Go to Web Terminal</a>
+      <div id="badge" class="badge">SECURE GATEWAY</div>
+      <div id="spinner" class="spinner"></div>
+      <h1 id="title">Connecting to Code Server</h1>
+      <p id="status">Resolving active tunnel session...</p>
+      <div id="action-area">
+        <a id="retry-btn" href="javascript:location.reload()" class="btn">Retry</a>
+        <a href="index.html" class="btn btn-secondary">Open Terminal</a>
       </div>
     </div>
   </div>
 
-  <iframe id="wa-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
+  <iframe id="ide-frame" allow="clipboard-read; clipboard-write"></iframe>
 
-  <div class="control-pill" id="controls" style="display:none;">
-    <span>WhatsApp Console</span>
-    <button onclick="reloadFrame()" title="Reload Session">⟳ Reload</button>
-    <a id="popout-link" href="#" target="_blank" title="Open in direct tab">↗ Popout</a>
-    <a href="https://topjohnnywu.github.io/term/" title="Switch to Terminal">Terminal</a>
-    <a href="ide.html" title="Switch to IDE">IDE</a>
-    <a href="https://topjohnnywu.github.io/app/" title="Switch to DO Insight">DO Insight</a>
+  <div id="controls">
+    <button onclick="reloadFrame()" title="Reload IDE">↻ Reload</button>
+    <a id="popout-link" href="#" target="_blank" title="Open directly in new tab">↗ Popout</a>
+    <a href="index.html" title="Switch to Terminal">Terminal</a>
+    <a href="app.html" title="Switch to App">App</a>
+    <a href="wa.html" title="Switch to WhatsApp">WhatsApp</a>
   </div>
 
   <script>
@@ -146,9 +147,9 @@
     let activeUrl = null;
 
     function reloadFrame() {
-      const frame = document.getElementById("wa-frame");
+      const frame = document.getElementById("ide-frame");
       if (activeUrl) {
-        frame.src = activeUrl + "?t=" + Date.now();
+        frame.src = activeUrl;
       } else {
         location.reload();
       }
@@ -157,9 +158,10 @@
     async function init() {
       const statusEl = document.getElementById("status");
       const titleEl = document.getElementById("title");
+      const badgeEl = document.getElementById("badge");
       const actionEl = document.getElementById("action-area");
       const spinner = document.getElementById("spinner");
-      const frame = document.getElementById("wa-frame");
+      const frame = document.getElementById("ide-frame");
       const loader = document.getElementById("loader");
       const controls = document.getElementById("controls");
       const popoutLink = document.getElementById("popout-link");
@@ -168,11 +170,13 @@
         const res = await fetch("https://api.github.com/gists/" + GIST_ID + "?nocache=" + Date.now(), { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
-        const url = (data.files && data.files["wa_tunnel.txt"]) ? data.files["wa_tunnel.txt"].content.trim() : null;
+        const url = (data.files && data.files["ide_tunnel.txt"]) ? data.files["ide_tunnel.txt"].content.trim() : null;
 
         if (!url || !url.startsWith("http")) {
-          titleEl.innerText = "WhatsApp Server Offline";
-          statusEl.innerText = 'WhatsApp Chat server is currently offline. Please run "whatsapp-server" in Termux to start it.';
+          badgeEl.className = "badge offline";
+          badgeEl.innerText = "ACCESS DISABLED";
+          titleEl.innerText = "Code Server Offline";
+          statusEl.innerText = 'Run "./start-ide" in Termux on your Android device to unlock access.';
           spinner.style.display = "none";
           actionEl.style.display = "block";
           return;
@@ -180,6 +184,15 @@
 
         activeUrl = url;
         popoutLink.href = url;
+        
+        // Directly redirect or load in frame
+        // If query has direct=1 or inside iframe issues, redirect directly
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("direct") === "1") {
+          window.location.href = url;
+          return;
+        }
+
         frame.src = url;
 
         frame.onload = () => {
@@ -188,7 +201,7 @@
           controls.style.display = "flex";
         };
 
-        // Fallback in case onload is suppressed across origins
+        // Fallback for cross-origin iframe security
         setTimeout(() => {
           loader.style.display = "none";
           frame.style.display = "block";
@@ -196,6 +209,8 @@
         }, 1200);
 
       } catch (err) {
+        badgeEl.className = "badge offline";
+        badgeEl.innerText = "ERROR";
         titleEl.innerText = "Connection Failed";
         statusEl.innerText = "Error resolving session: " + err.message;
         spinner.style.display = "none";
