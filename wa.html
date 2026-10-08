@@ -142,13 +142,14 @@
   </div>
 
   <script>
-    const GIST_ID = "9b4f25e801a2358e9357661b08a2f9ee";
-    let activeUrl = null;
+    const GIST_ID = "b491ad614bb910c7689650f63f4c9fcb";
+    const PRIMARY_URL = "https://wa.hsrlhfz.stream/vnc.html?autoconnect=true&resize=remote";
+    let activeUrl = PRIMARY_URL;
 
     function reloadFrame() {
       const frame = document.getElementById("wa-frame");
       if (activeUrl) {
-        frame.src = activeUrl + "?t=" + Date.now();
+        frame.src = activeUrl + (activeUrl.includes("?") ? "&" : "?") + "t=" + Date.now();
       } else {
         location.reload();
       }
@@ -164,23 +165,24 @@
       const controls = document.getElementById("controls");
       const popoutLink = document.getElementById("popout-link");
 
+      let targetUrl = PRIMARY_URL;
+
       try {
         const res = await fetch("https://api.github.com/gists/" + GIST_ID + "?nocache=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
-        const url = (data.files && data.files["wa_tunnel.txt"]) ? data.files["wa_tunnel.txt"].content.trim() : null;
-
-        if (!url || !url.startsWith("http")) {
-          titleEl.innerText = "WhatsApp Server Offline";
-          statusEl.innerText = 'WhatsApp Chat server is currently offline. Please run "whatsapp-server" in Termux to start it.';
-          spinner.style.display = "none";
-          actionEl.style.display = "block";
-          return;
+        if (res.ok) {
+          const data = await res.json();
+          const customUrl = (data.files && data.files["wa_tunnel.txt"]) ? data.files["wa_tunnel.txt"].content.trim() : null;
+          if (customUrl && customUrl.startsWith("http")) {
+            targetUrl = customUrl;
+          }
         }
+      } catch (_) {
+        // Fall back cleanly to primary 24/7 VPS stream
+      }
 
-        activeUrl = url;
-        popoutLink.href = url;
-        frame.src = url;
+      activeUrl = targetUrl;
+      popoutLink.href = targetUrl;
+      frame.src = targetUrl;
 
         frame.onload = () => {
           loader.style.display = "none";
