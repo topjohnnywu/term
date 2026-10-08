@@ -422,7 +422,7 @@
   <main>
     <div class="hero-banner">
       <h1>Executive Systems Control</h1>
-      <p>Direct encrypted tunnels to core development workstations, terminal AI suites, and insight telemetry hubs.</p>
+      <p>Direct encrypted tunnels to core development workstations, terminal AI suites, and remote operations consoles.</p>
     </div>
 
     <div class="deck-grid">
@@ -514,49 +514,6 @@
           </a>
           <a href="ide.html" class="btn-sub" title="Open IDE portal wrapper">Portal</a>
           <a id="btn-ide-fallback" href="#" target="_blank" rel="noopener" class="btn-sub" style="display:none;" title="Dynamic Gist fallback tunnel">Fallback</a>
-        </div>
-      </div>
-
-      <!-- Card 3: DO Insight System -->
-      <div class="stark-card">
-        <div>
-          <div class="card-head">
-            <div class="card-icon-wrap">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="20" x2="18" y2="10"></line>
-                <line x1="12" y1="20" x2="12" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="14"></line>
-              </svg>
-            </div>
-            <span id="badge-app" class="card-badge badge-standby">[STANDBY]</span>
-          </div>
-          <h2 class="card-title">DO Insight System</h2>
-          <p class="card-desc">Express + Node.js intelligence engine and AI assistant running in auto-watch mode.</p>
-          <div class="telemetry-box">
-            <div class="telemetry-row">
-              <span class="telemetry-label">PERMANENT:</span>
-              <span class="telemetry-val">topjohnnywu.github.io/app/</span>
-            </div>
-            <div class="telemetry-row">
-              <span class="telemetry-label">DAEMON:</span>
-              <span>Port 3000 (watch mode)</span>
-            </div>
-            <div class="telemetry-row">
-              <span class="telemetry-label">SESSION:</span>
-              <span id="telemetry-app-status">Checking Gist...</span>
-            </div>
-          </div>
-        </div>
-        <div class="card-actions">
-          <a href="https://topjohnnywu.github.io/app/" target="_blank" rel="noopener" class="btn-launch">
-            <span>Launch App</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-          </a>
-          <a href="app.html" class="btn-sub" title="Open fallback app portal">Fallback</a>
         </div>
       </div>
 
@@ -700,22 +657,6 @@
           } else {
             btnIdeFallback.style.display = 'none';
           }
-        }
-
-        // DO Insight Status
-        const appUrl = files['app_tunnel.txt'] ? files['app_tunnel.txt'].content.trim() : null;
-        const badgeApp = document.getElementById('badge-app');
-        const telemetryApp = document.getElementById('telemetry-app-status');
-        if (appUrl && appUrl.startsWith('http')) {
-          badgeApp.className = 'card-badge badge-online';
-          badgeApp.innerText = '[ONLINE]';
-          telemetryApp.innerText = 'Active Tunnel Connected';
-          telemetryApp.style.color = 'var(--emerald)';
-        } else {
-          badgeApp.className = 'card-badge badge-standby';
-          badgeApp.innerText = '[STANDBY]';
-          telemetryApp.innerText = 'Offline / Standby';
-          telemetryApp.style.color = '#94a3b8';
         }
 
         // WhatsApp Status
