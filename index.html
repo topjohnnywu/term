@@ -454,10 +454,14 @@
               <span class="telemetry-label">AUTH:</span>
               <span>admin / termux2026</span>
             </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">FAILOVER:</span>
+              <span id="telemetry-term-failover">Dual-Route Armed</span>
+            </div>
           </div>
         </div>
         <div class="card-actions">
-          <a href="https://term.hsrlhfz.stream" target="_blank" rel="noopener" class="btn-launch">
+          <a href="https://term.hsrlhfz.stream" target="_blank" rel="noopener" class="btn-launch" id="btn-term-launch">
             <span>Launch Terminal</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -465,7 +469,8 @@
               <line x1="10" y1="14" x2="21" y2="3"></line>
             </svg>
           </a>
-          <button onclick="openEmbeddedFrame('https://term.hsrlhfz.stream')" class="btn-sub" title="Launch inside embedded frame">Frame</button>
+          <button onclick="openEmbeddedFrame(activeTermUrl || 'https://term.hsrlhfz.stream')" class="btn-sub" title="Launch inside embedded frame">Frame</button>
+          <a id="btn-term-fallback" href="#" target="_blank" rel="noopener" class="btn-sub" style="display:none;" title="Dynamic Gist fallback tunnel">Fallback</a>
         </div>
       </div>
 
@@ -508,6 +513,7 @@
             </svg>
           </a>
           <a href="ide.html" class="btn-sub" title="Open IDE portal wrapper">Portal</a>
+          <a id="btn-ide-fallback" href="#" target="_blank" rel="noopener" class="btn-sub" style="display:none;" title="Dynamic Gist fallback tunnel">Fallback</a>
         </div>
       </div>
 
@@ -647,6 +653,9 @@
       if (e.key === 'Escape') closeEmbeddedFrame();
     });
 
+    let activeTermUrl = 'https://term.hsrlhfz.stream';
+    let activeIdeUrl = 'https://ide.hsrlhfz.stream';
+
     // Non-blocking Gist Telemetry Poller
     const GIST_ID = 'b491ad614bb910c7689650f63f4c9fcb';
     async function checkTelemetry() {
@@ -655,6 +664,41 @@
         if (!res.ok) return;
         const data = await res.json();
         const files = data.files || {};
+
+        // Terminal Fallback Telemetry
+        const termUrl = files['tunnel.txt'] ? files['tunnel.txt'].content.trim() : null;
+        const btnTermFallback = document.getElementById('btn-term-fallback');
+        const telemetryTermFailover = document.getElementById('telemetry-term-failover');
+        if (termUrl && termUrl.startsWith('http')) {
+          activeTermUrl = termUrl;
+          if (termUrl !== 'https://term.hsrlhfz.stream') {
+            btnTermFallback.href = termUrl;
+            btnTermFallback.style.display = 'inline-flex';
+            if (telemetryTermFailover) {
+              telemetryTermFailover.innerText = 'Fallback Tunnel Active';
+              telemetryTermFailover.style.color = 'var(--emerald)';
+            }
+          } else {
+            btnTermFallback.style.display = 'none';
+            if (telemetryTermFailover) {
+              telemetryTermFailover.innerText = 'Dual-Route Armed';
+              telemetryTermFailover.style.color = 'var(--cyan)';
+            }
+          }
+        }
+
+        // IDE Fallback Telemetry
+        const ideUrl = files['ide_tunnel.txt'] ? files['ide_tunnel.txt'].content.trim() : null;
+        const btnIdeFallback = document.getElementById('btn-ide-fallback');
+        if (ideUrl && ideUrl.startsWith('http')) {
+          activeIdeUrl = ideUrl;
+          if (ideUrl !== 'https://ide.hsrlhfz.stream') {
+            btnIdeFallback.href = ideUrl;
+            btnIdeFallback.style.display = 'inline-flex';
+          } else {
+            btnIdeFallback.style.display = 'none';
+          }
+        }
 
         // DO Insight Status
         const appUrl = files['app_tunnel.txt'] ? files['app_tunnel.txt'].content.trim() : null;
