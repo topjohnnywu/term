@@ -3,138 +3,690 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Termux Web Terminal</title>
+  <title>JARVIS Command Deck // Stark-HUD</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #0d1117;
-      color: #c9d1d9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    :root {
+      --bg: #070b12;
+      --card-bg: rgba(13, 20, 34, 0.82);
+      --card-border: rgba(56, 189, 248, 0.18);
+      --card-hover-border: rgba(0, 240, 255, 0.6);
+      --cyan: #00f0ff;
+      --cyan-dim: rgba(0, 240, 255, 0.12);
+      --blue: #38bdf8;
+      --emerald: #00e676;
+      --amber: #f59e0b;
+      --text: #e2e8f0;
+      --text-muted: #8492a6;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    #loader {
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(14, 116, 144, 0.15) 0%, transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 1.5rem;
+      padding: 1.5rem 1rem 2rem;
     }
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      padding: 2.5rem;
-      max-width: 480px;
+
+    /* Top HUD Navigation Bar */
+    header {
+      max-width: 1120px;
+      margin: 0 auto 2rem;
       width: 100%;
-      text-align: center;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 1rem;
     }
-    .spinner {
-      border: 4px solid #21262d;
-      border-top: 4px solid #58a6ff;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      color: var(--cyan);
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #f8fafc;
+      text-transform: uppercase;
+    }
+
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .hud-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hud-node {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--emerald);
       border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 8px var(--emerald);
+      animation: pulse 2s infinite;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #f0f6fc; }
-    p { font-size: 0.95rem; color: #8b949e; margin-bottom: 1.5rem; line-height: 1.5; }
-    .btn {
-      display: inline-block;
-      background: #238636;
-      color: #fff;
-      font-weight: 600;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
-    .btn:hover { background: #2ea043; }
-    #term-frame {
-      display: none;
+
+    /* Main Deck Grid */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    .hero-banner {
+      margin-bottom: 2rem;
+    }
+
+    .hero-banner h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-banner p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 700px;
+      line-height: 1.5;
+    }
+
+    .deck-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Stark Card Component */
+    .stark-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stark-card::before {
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+      transition: background 0.3s;
+    }
+
+    .stark-card:hover {
+      border-color: var(--card-hover-border);
+      box-shadow: 0 8px 32px rgba(0, 240, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .stark-card:hover::before {
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-icon-wrap {
+      width: 44px;
+      height: 44px;
+      background: rgba(2, 6, 23, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+    }
+
+    .card-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .badge-online {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--emerald);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+
+    .badge-secured {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge-standby {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.35rem;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Telemetry Info Box */
+    .telemetry-box {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .telemetry-label {
+      color: #64748b;
+    }
+
+    .telemetry-val {
+      color: var(--cyan);
+    }
+
+    /* Button Actions */
+    .card-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn-launch {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(14, 116, 144, 0.25));
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-launch:hover {
+      background: rgba(0, 240, 255, 0.25);
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+      color: #fff;
+    }
+
+    .btn-sub {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-sub:hover {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Embedded Terminal Modal */
+    #embed-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(2, 6, 23, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      flex-direction: column;
+    }
+
+    .embed-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1rem;
+      background: #090d16;
+      border-bottom: 1px solid var(--card-border);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .embed-title {
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .embed-close {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .embed-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    #embed-frame {
+      width: 100%;
       height: 100%;
       border: none;
       background: #000;
+      flex: 1;
     }
 
+    footer {
+      max-width: 1120px;
+      margin: 2rem auto 0;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #475569;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 1.5rem;
+    }
   </style>
 </head>
 <body>
-  <div id="loader">
-    <div class="card">
-      <div class="spinner" id="spinner"></div>
-      <h1 id="title">Connecting to Terminal...</h1>
-      <p id="status">Connecting to active Cloudflare session...</p>
-      <div id="action-area" style="display:none;">
-        <button class="btn" onclick="location.reload()">Retry Connection</button>
-      </div>
-      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #6e7681;">
-        Looking for app? <a href="https://topjohnnywu.github.io/app/" style="color:#58a6ff; text-decoration:none;">Go to DO Insight System</a>
-      </div>
+
+  <!-- Top HUD Bar -->
+  <header>
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+      <span class="brand-title">STARK-HUD // COMMAND DECK</span>
+      <span class="brand-badge">PROD-v5.2</span>
     </div>
+    <div class="hud-meta">
+      <div class="hud-node">
+        <div class="pulse-dot"></div>
+        <span>VPS-UBUNTU (43.163.102.56)</span>
+      </div>
+      <div id="live-clock">--:--:-- CST</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-banner">
+      <h1>Executive Systems Control</h1>
+      <p>Direct encrypted tunnels to core development workstations, terminal AI suites, and insight telemetry hubs.</p>
+    </div>
+
+    <div class="deck-grid">
+
+      <!-- Card 1: JARVIS Web Terminal -->
+      <div class="stark-card">
+        <div>
+          <div class="card-head">
+            <div class="card-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </div>
+            <span class="card-badge badge-online">[ONLINE 24/7]</span>
+          </div>
+          <h2 class="card-title">JARVIS AI Terminal</h2>
+          <p class="card-desc">Interactive web terminal with native agy CLI agent suite and root tmux persistence.</p>
+          <div class="telemetry-box">
+            <div class="telemetry-row">
+              <span class="telemetry-label">INGRESS:</span>
+              <span class="telemetry-val">https://term.hsrlhfz.stream</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">GATEWAY:</span>
+              <span>127.0.0.1:7680 -> :7681</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">AUTH:</span>
+              <span>admin / termux2026</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a href="https://term.hsrlhfz.stream" target="_blank" rel="noopener" class="btn-launch">
+            <span>Launch Terminal</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <button onclick="openEmbeddedFrame('https://term.hsrlhfz.stream')" class="btn-sub" title="Launch inside embedded frame">Frame</button>
+        </div>
+      </div>
+
+      <!-- Card 2: Remote Code Server IDE -->
+      <div class="stark-card">
+        <div>
+          <div class="card-head">
+            <div class="card-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <span class="card-badge badge-secured">[SECURED]</span>
+          </div>
+          <h2 class="card-title">VS Code Web IDE</h2>
+          <p class="card-desc">Remote Code Server workspace on Ubuntu VPS protected by Nginx gatekeeper firewall.</p>
+          <div class="telemetry-box">
+            <div class="telemetry-row">
+              <span class="telemetry-label">INGRESS:</span>
+              <span class="telemetry-val">https://ide.hsrlhfz.stream</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">GATEKEEPER:</span>
+              <span>Port 8081 (ide-unlock)</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">WORKSPACE:</span>
+              <span>/home/ubuntu</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a href="https://ide.hsrlhfz.stream" target="_blank" rel="noopener" class="btn-launch">
+            <span>Launch IDE</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <a href="ide.html" class="btn-sub" title="Open IDE portal wrapper">Portal</a>
+        </div>
+      </div>
+
+      <!-- Card 3: DO Insight System -->
+      <div class="stark-card">
+        <div>
+          <div class="card-head">
+            <div class="card-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <span id="badge-app" class="card-badge badge-standby">[STANDBY]</span>
+          </div>
+          <h2 class="card-title">DO Insight System</h2>
+          <p class="card-desc">Express + Node.js intelligence engine and AI assistant running in auto-watch mode.</p>
+          <div class="telemetry-box">
+            <div class="telemetry-row">
+              <span class="telemetry-label">PERMANENT:</span>
+              <span class="telemetry-val">topjohnnywu.github.io/app/</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">DAEMON:</span>
+              <span>Port 3000 (watch mode)</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">SESSION:</span>
+              <span id="telemetry-app-status">Checking Gist...</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a href="https://topjohnnywu.github.io/app/" target="_blank" rel="noopener" class="btn-launch">
+            <span>Launch App</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <a href="app.html" class="btn-sub" title="Open fallback app portal">Fallback</a>
+        </div>
+      </div>
+
+      <!-- Card 4: WhatsApp Web Console -->
+      <div class="stark-card">
+        <div>
+          <div class="card-head">
+            <div class="card-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </div>
+            <span id="badge-wa" class="card-badge badge-secured">[RELAY]</span>
+          </div>
+          <h2 class="card-title">WhatsApp Web Console</h2>
+          <p class="card-desc">Headless Baileys remote relay bot session and multi-device console on VPS.</p>
+          <div class="telemetry-box">
+            <div class="telemetry-row">
+              <span class="telemetry-label">DAEMON:</span>
+              <span>whatsapp.service (Port 3001)</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">SESSION:</span>
+              <span>24/7 VPS Headless Client</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">SYNC:</span>
+              <span id="telemetry-wa-status">Checking Gist...</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a href="wa.html" target="_blank" rel="noopener" class="btn-launch">
+            <span>Open Console</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Embedded Terminal Frame Overlay -->
+  <div id="embed-modal">
+    <div class="embed-bar">
+      <div class="embed-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        <span>JARVIS WEB TERMINAL // EMBEDDED SESSION</span>
+      </div>
+      <button class="embed-close" onclick="closeEmbeddedFrame()">CLOSE FRAME [ESC]</button>
+    </div>
+    <iframe id="embed-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
   </div>
 
-  <iframe id="term-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
+  <footer>
+    STARK INDUSTRIAL OPERATING SYSTEM // SHIELD TELEMETRY INGRESS // ALL SYSTEMS SECURE
+  </footer>
 
   <script>
+    // Live HUD Clock
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-GB', { hour12: false }) + ' CST';
+      document.getElementById('live-clock').innerText = timeStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Embedded Frame Control
+    function openEmbeddedFrame(url) {
+      const modal = document.getElementById('embed-modal');
+      const frame = document.getElementById('embed-frame');
+      frame.src = url;
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeEmbeddedFrame() {
+      const modal = document.getElementById('embed-modal');
+      const frame = document.getElementById('embed-frame');
+      modal.style.display = 'none';
+      frame.src = 'about:blank';
+      document.body.style.overflow = 'auto';
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeEmbeddedFrame();
+    });
+
+    // Non-blocking Gist Telemetry Poller
     const GIST_ID = 'b491ad614bb910c7689650f63f4c9fcb';
-    let activeUrl = null;
-
-    async function init() {
-      const statusEl = document.getElementById('status');
-      const titleEl = document.getElementById('title');
-      const actionEl = document.getElementById('action-area');
-      const spinner = document.getElementById('spinner');
-      const frame = document.getElementById('term-frame');
-      const loader = document.getElementById('loader');
-
+    async function checkTelemetry() {
       try {
         const res = await fetch('https://api.github.com/gists/' + GIST_ID + '?nocache=' + Date.now(), { cache: 'no-store' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) return;
         const data = await res.json();
-        const url = (data.files && data.files['tunnel.txt']) ? data.files['tunnel.txt'].content.trim() : null;
+        const files = data.files || {};
 
-        if (!url || !url.startsWith('http')) {
-          titleEl.innerText = 'Terminal Offline';
-          statusEl.innerText = 'Terminal server is currently offline. Please run "run terminal server" on Android.';
-          spinner.style.display = 'none';
-          actionEl.style.display = 'block';
-          return;
+        // DO Insight Status
+        const appUrl = files['app_tunnel.txt'] ? files['app_tunnel.txt'].content.trim() : null;
+        const badgeApp = document.getElementById('badge-app');
+        const telemetryApp = document.getElementById('telemetry-app-status');
+        if (appUrl && appUrl.startsWith('http')) {
+          badgeApp.className = 'card-badge badge-online';
+          badgeApp.innerText = '[ONLINE]';
+          telemetryApp.innerText = 'Active Tunnel Connected';
+          telemetryApp.style.color = 'var(--emerald)';
+        } else {
+          badgeApp.className = 'card-badge badge-standby';
+          badgeApp.innerText = '[STANDBY]';
+          telemetryApp.innerText = 'Offline / Standby';
+          telemetryApp.style.color = '#94a3b8';
         }
 
-        activeUrl = url;
-        frame.src = url;
-
-        frame.onload = () => {
-          loader.style.display = 'none';
-          frame.style.display = 'block';
-        };
-
-        // Fallback in case onload is suppressed across origins
-        setTimeout(() => {
-          loader.style.display = 'none';
-          frame.style.display = 'block';
-        }, 1200);
-
-      } catch (err) {
-        titleEl.innerText = 'Connection Failed';
-        statusEl.innerText = 'Error fetching session: ' + err.message;
-        spinner.style.display = 'none';
-        actionEl.style.display = 'block';
+        // WhatsApp Status
+        const waUrl = files['wa_tunnel.txt'] ? files['wa_tunnel.txt'].content.trim() : null;
+        const telemetryWa = document.getElementById('telemetry-wa-status');
+        if (waUrl && waUrl.startsWith('http')) {
+          telemetryWa.innerText = 'Active Tunnel Connected';
+          telemetryWa.style.color = 'var(--emerald)';
+        } else {
+          telemetryWa.innerText = 'Direct VPS Supervised';
+          telemetryWa.style.color = 'var(--blue)';
+        }
+      } catch (_) {
+        // Silently preserve static display on network or rate limit hiccup
       }
     }
-    init();
+    checkTelemetry();
   </script>
 </body>
 </html>
