@@ -3,207 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WhatsApp Work Portal</title>
+  <title>WhatsApp Terminal Hub</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
-      background: #0b141a;
-      color: #e9edef;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-    #loader {
+      background: #000000;
+      color: #e6edf3;
+      font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
       padding: 1.5rem;
+      -webkit-font-smoothing: antialiased;
     }
     .card {
-      background: #111b21;
-      border: 1px solid #222e35;
-      border-radius: 14px;
-      padding: 2.5rem;
-      max-width: 480px;
+      background: #050505;
+      border: 1px solid #1c1c1c;
+      border-radius: 4px;
+      padding: 2.25rem 2rem;
+      max-width: 520px;
       width: 100%;
-      text-align: center;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+      box-shadow: none;
+      text-align: left;
     }
     .badge {
       display: inline-block;
-      background: #00a884;
-      color: #ffffff;
-      font-size: 0.75rem;
+      background: rgba(74, 222, 128, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      font-size: 0.7rem;
       font-weight: 700;
       padding: 0.25rem 0.6rem;
-      border-radius: 20px;
+      border-radius: 3px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 1.2rem;
-    }
-    .spinner {
-      border: 4px solid #222e35;
-      border-top: 4px solid #00a884;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1.5rem;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #e9edef; font-weight: 600; }
-    p { font-size: 0.95rem; color: #8696a0; margin-bottom: 1.5rem; line-height: 1.5; }
-    .btn {
-      display: inline-block;
-      background: #00a884;
-      color: #fff;
-      font-weight: 600;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: #06cf9c; }
-    #wa-frame {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #0b141a;
-    }
-    .control-pill {
-      position: fixed;
-      bottom: 12px;
-      right: 12px;
-      z-index: 999999;
-      background: rgba(17, 27, 33, 0.85);
-      backdrop-filter: blur(8px);
-      border: 1px solid #222e35;
-      border-radius: 20px;
-      padding: 4px 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 12px;
-      color: #8696a0;
-      transition: opacity 0.2s;
-      opacity: 0.35;
-    }
-    .control-pill:hover {
-      opacity: 1;
-    }
-    .control-pill a, .control-pill button {
-      color: #00a884;
-      text-decoration: none;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 12px;
       font-family: inherit;
     }
-    .control-pill a:hover, .control-pill button:hover {
-      text-decoration: underline;
+    h1 { font-size: 1.35rem; margin-bottom: 0.5rem; color: #ffffff; font-weight: 700; font-family: inherit; }
+    p { font-size: 0.85rem; color: #8b949e; margin-bottom: 1.2rem; line-height: 1.5; font-family: inherit; }
+    .command-box {
+      background: #000000;
+      border: 1px solid #1c1c1c;
+      border-radius: 3px;
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #4ade80;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .steps {
+      list-style: none;
+      margin-bottom: 1.8rem;
+    }
+    .steps li {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: inherit;
+    }
+    .steps li span.step-num {
+      color: #4ade80;
+      font-weight: 700;
+    }
+    code {
+      background: #0a0a0a;
+      border: 1px solid #1c1c1c;
+      padding: 1px 4px;
+      border-radius: 2px;
+      color: #4ade80;
+      font-family: inherit;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 1rem;
+    }
+    .btn {
+      display: inline-block;
+      background: #000000;
+      color: #4ade80;
+      border: 1px solid #4ade80;
+      font-weight: 600;
+      padding: 0.65rem 1.2rem;
+      border-radius: 3px;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      text-align: center;
+      flex: 1;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: #4ade80;
+      color: #000000;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+    }
+    .btn-secondary {
+      background: #000000;
+      border: 1px solid #1c1c1c;
+      color: #8b949e;
+    }
+    .btn-secondary:hover {
+      background: #0d0d0d;
+      border-color: #262626;
+      color: #e6edf3;
+      box-shadow: none;
     }
   </style>
 </head>
 <body>
-  <div id="loader">
-    <div class="card">
-      <div class="badge">WhatsApp Live Console</div>
-      <div class="spinner" id="spinner"></div>
-      <h1 id="title">Connecting to WhatsApp...</h1>
-      <p id="status">Resolving active secure tunnel session...</p>
-      <div id="action-area" style="display:none;">
-        <button class="btn" onclick="location.reload()">Retry Connection</button>
-      </div>
-      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #8696a0;">
-        Looking for terminal? <a href="https://topjohnnywu.github.io/term/" style="color:#00a884; text-decoration:none;">Go to Web Terminal</a>
-      </div>
+  <div class="card">
+    <div class="badge">WHATSAPP TERMINAL CLIENT</div>
+    <h1>WhatsApp Terminal Hub</h1>
+    <p>Zero-latency, keyboard-driven WhatsApp TUI running inside your persistent 24/7 Web Terminal session.</p>
+
+    <div class="command-box">
+      <span>$ whatsapp</span>
+    </div>
+
+    <ul class="steps">
+      <li><span class="step-num">1.</span> Launch Web Terminal using the button below.</li>
+      <li><span class="step-num">2.</span> Type <code>whatsapp</code> and press Enter.</li>
+      <li><span class="step-num">3.</span> On first run, scan the QR code via WhatsApp &gt; Linked Devices.</li>
+      <li><span class="step-num">4.</span> Session persists automatically in SQLite database.</li>
+    </ul>
+
+    <div class="btn-group">
+      <a href="https://term.hsrlhfz.stream" target="_blank" rel="noopener" class="btn">Launch Terminal</a>
+      <a href="index.html" class="btn btn-secondary">Command Deck</a>
     </div>
   </div>
-
-  <iframe id="wa-frame" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
-
-  <div class="control-pill" id="controls" style="display:none;">
-    <span>WhatsApp Console</span>
-    <button onclick="reloadFrame()" title="Reload Session">⟳ Reload</button>
-    <a id="popout-link" href="#" target="_blank" title="Open in direct tab">↗ Popout</a>
-    <a href="https://topjohnnywu.github.io/term/" title="Switch to Terminal">Terminal</a>
-    <a href="ide.html" title="Switch to IDE">IDE</a>
-  </div>
-
-  <script>
-    const GIST_ID = "b491ad614bb910c7689650f63f4c9fcb";
-    const PRIMARY_URL = "https://wa.hsrlhfz.stream/vnc.html?autoconnect=true&resize=remote";
-    let activeUrl = PRIMARY_URL;
-
-    function reloadFrame() {
-      const frame = document.getElementById("wa-frame");
-      if (activeUrl) {
-        frame.src = activeUrl + (activeUrl.includes("?") ? "&" : "?") + "t=" + Date.now();
-      } else {
-        location.reload();
-      }
-    }
-
-    async function init() {
-      const statusEl = document.getElementById("status");
-      const titleEl = document.getElementById("title");
-      const actionEl = document.getElementById("action-area");
-      const spinner = document.getElementById("spinner");
-      const frame = document.getElementById("wa-frame");
-      const loader = document.getElementById("loader");
-      const controls = document.getElementById("controls");
-      const popoutLink = document.getElementById("popout-link");
-
-      let targetUrl = PRIMARY_URL;
-
-      try {
-        const res = await fetch("https://api.github.com/gists/" + GIST_ID + "?nocache=" + Date.now(), { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          const customUrl = (data.files && data.files["wa_tunnel.txt"]) ? data.files["wa_tunnel.txt"].content.trim() : null;
-          if (customUrl && customUrl.startsWith("http")) {
-            targetUrl = customUrl;
-          }
-        }
-      } catch (_) {
-        // Fall back cleanly to primary 24/7 VPS stream
-      }
-
-      activeUrl = targetUrl;
-      popoutLink.href = targetUrl;
-      frame.src = targetUrl;
-
-        frame.onload = () => {
-          loader.style.display = "none";
-          frame.style.display = "block";
-          controls.style.display = "flex";
-        };
-
-        // Fallback in case onload is suppressed across origins
-        setTimeout(() => {
-          loader.style.display = "none";
-          frame.style.display = "block";
-          controls.style.display = "flex";
-        }, 1200);
-
-      } catch (err) {
-        titleEl.innerText = "Connection Failed";
-        statusEl.innerText = "Error resolving session: " + err.message;
-        spinner.style.display = "none";
-        actionEl.style.display = "block";
-      }
-    }
-    init();
-  </script>
 </body>
 </html>

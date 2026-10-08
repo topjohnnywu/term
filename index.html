@@ -6,39 +6,37 @@
   <title>JARVIS Command Deck // Stark-HUD</title>
   <style>
     :root {
-      --bg: #070b12;
-      --card-bg: rgba(13, 20, 34, 0.82);
-      --card-border: rgba(56, 189, 248, 0.18);
-      --card-hover-border: rgba(0, 240, 255, 0.6);
-      --cyan: #00f0ff;
-      --cyan-dim: rgba(0, 240, 255, 0.12);
-      --blue: #38bdf8;
-      --emerald: #00e676;
-      --amber: #f59e0b;
-      --text: #e2e8f0;
-      --text-muted: #8492a6;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color-scheme: dark;
+      --bg: #000000;
+      --card-bg: #050505;
+      --card-border: #1c1c1c;
+      --card-hover-border: #4ade80;
+      --accent-green: #4ade80;
+      --accent-green-dim: rgba(74, 222, 128, 0.12);
+      --accent-blue: #38bdf8;
+      --accent-amber: #fbbf24;
+      --accent-red: #ef4444;
+      --text: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #52525b;
+      --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-sans: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg);
-      background-image:
-        radial-gradient(ellipse at 50% 0%, rgba(14, 116, 144, 0.15) 0%, transparent 70%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 32px 32px, 32px 32px;
+      background-color: #000000;
       color: var(--text);
-      font-family: var(--font-sans);
+      font-family: var(--font-mono);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       padding: 1.5rem 1rem 2rem;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Top HUD Navigation Bar */
+    /* Top Terminal Navigation Bar */
     header {
       max-width: 1120px;
       margin: 0 auto 2rem;
@@ -50,37 +48,39 @@
       border-bottom: 1px solid var(--card-border);
       flex-wrap: wrap;
       gap: 1rem;
+      font-family: var(--font-mono);
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      font-family: var(--font-mono);
     }
 
     .brand-icon {
-      width: 28px;
-      height: 28px;
-      color: var(--cyan);
+      width: 26px;
+      height: 26px;
+      color: var(--accent-green);
     }
 
     .brand-title {
       font-family: var(--font-mono);
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #f8fafc;
+      letter-spacing: 0.06em;
+      color: var(--accent-green);
       text-transform: uppercase;
     }
 
     .brand-badge {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--cyan);
-      background: var(--cyan-dim);
-      border: 1px solid rgba(0, 240, 255, 0.3);
-      padding: 2px 8px;
-      border-radius: 4px;
+      font-size: 0.68rem;
+      color: var(--accent-green);
+      background: var(--accent-green-dim);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      padding: 2px 7px;
+      border-radius: 3px;
       letter-spacing: 0.05em;
     }
 
@@ -90,7 +90,7 @@
       gap: 1.25rem;
       font-family: var(--font-mono);
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
     }
 
     .hud-node {
@@ -100,11 +100,11 @@
     }
 
     .pulse-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--emerald);
+      width: 7px;
+      height: 7px;
+      background: var(--accent-green);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--emerald);
+      box-shadow: 0 0 6px rgba(74, 222, 128, 0.7);
       animation: pulse 2s infinite;
     }
 
@@ -126,37 +126,38 @@
     }
 
     .hero-banner h1 {
-      font-size: 1.75rem;
+      font-size: 1.45rem;
       font-weight: 700;
-      color: #f8fafc;
-      margin-bottom: 0.5rem;
+      color: #ffffff;
+      margin-bottom: 0.4rem;
       letter-spacing: -0.01em;
+      font-family: var(--font-mono);
     }
 
     .hero-banner p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      max-width: 700px;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      max-width: 720px;
       line-height: 1.5;
+      font-family: var(--font-mono);
     }
 
     .deck-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1.5rem;
+      gap: 1.25rem;
     }
 
-    /* Stark Card Component */
+    /* Terminal Deck Card Component */
     .stark-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1.5rem;
+      border-radius: 4px;
+      padding: 1.35rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      backdrop-filter: blur(8px);
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
     }
@@ -169,89 +170,90 @@
       width: 100%;
       height: 2px;
       background: linear-gradient(90deg, transparent, var(--card-border), transparent);
-      transition: background 0.3s;
+      transition: background 0.25s;
     }
 
     .stark-card:hover {
       border-color: var(--card-hover-border);
-      box-shadow: 0 8px 32px rgba(0, 240, 255, 0.08);
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
 
     .stark-card:hover::before {
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
     }
 
     .card-head {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.15rem;
     }
 
     .card-icon-wrap {
-      width: 44px;
-      height: 44px;
-      background: rgba(2, 6, 23, 0.7);
+      width: 40px;
+      height: 40px;
+      background: #000000;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
+      border-radius: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--cyan);
+      color: var(--accent-green);
     }
 
     .card-badge {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 4px;
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 3px;
       letter-spacing: 0.05em;
       text-transform: uppercase;
       font-weight: 600;
     }
 
     .badge-online {
-      background: rgba(0, 230, 118, 0.12);
-      color: var(--emerald);
-      border: 1px solid rgba(0, 230, 118, 0.3);
+      background: var(--accent-green-dim);
+      color: var(--accent-green);
+      border: 1px solid rgba(74, 222, 128, 0.3);
     }
 
     .badge-secured {
-      background: rgba(56, 189, 248, 0.12);
-      color: var(--blue);
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
       border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
     .badge-standby {
-      background: rgba(245, 158, 11, 0.12);
-      color: var(--amber);
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      background: rgba(251, 191, 36, 0.1);
+      color: var(--accent-amber);
+      border: 1px solid rgba(251, 191, 36, 0.3);
     }
 
     .card-title {
-      font-size: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: #ffffff;
       margin-bottom: 0.35rem;
     }
 
     .card-desc {
-      color: var(--text-muted);
-      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
       line-height: 1.45;
       margin-bottom: 1.25rem;
+      font-family: var(--font-mono);
     }
 
     /* Telemetry Info Box */
     .telemetry-box {
-      background: rgba(2, 6, 23, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
+      background: #000000;
+      border: 1px solid var(--card-border);
+      border-radius: 3px;
       padding: 0.75rem;
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: var(--text-secondary);
       margin-bottom: 1.25rem;
       display: flex;
       flex-direction: column;
@@ -264,17 +266,17 @@
     }
 
     .telemetry-label {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     .telemetry-val {
-      color: var(--cyan);
+      color: var(--accent-green);
     }
 
     /* Button Actions */
     .card-actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.65rem;
       align-items: center;
     }
 
@@ -284,46 +286,45 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(14, 116, 144, 0.25));
-      color: var(--cyan);
-      border: 1px solid rgba(0, 240, 255, 0.4);
-      padding: 0.65rem 1rem;
-      border-radius: 6px;
+      background: #000000;
+      color: var(--accent-green);
+      border: 1px solid var(--accent-green);
+      padding: 0.6rem 1rem;
+      border-radius: 3px;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       cursor: pointer;
     }
 
     .btn-launch:hover {
-      background: rgba(0, 240, 255, 0.25);
-      border-color: var(--cyan);
-      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
-      color: #fff;
+      background: var(--accent-green);
+      color: #000000;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
     }
 
     .btn-sub {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: rgba(15, 23, 42, 0.6);
-      color: var(--text-muted);
+      background: #000000;
+      color: var(--text-secondary);
       border: 1px solid var(--card-border);
-      padding: 0.65rem 0.85rem;
-      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+      border-radius: 3px;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       cursor: pointer;
     }
 
     .btn-sub:hover {
-      background: rgba(30, 41, 59, 0.8);
+      background: #0d0d0d;
       color: var(--text);
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: #262626;
     }
 
     /* Embedded Terminal Modal */
@@ -334,8 +335,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(2, 6, 23, 0.92);
-      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(8px);
       z-index: 9999;
       flex-direction: column;
     }
@@ -345,35 +346,35 @@
       justify-content: space-between;
       align-items: center;
       padding: 0.6rem 1rem;
-      background: #090d16;
+      background: #000000;
       border-bottom: 1px solid var(--card-border);
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
 
     .embed-title {
-      color: var(--cyan);
+      color: var(--accent-green);
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
     .embed-close {
-      background: transparent;
+      background: #000000;
       border: 1px solid var(--card-border);
-      color: var(--text-muted);
+      color: var(--text-secondary);
       padding: 4px 10px;
-      border-radius: 4px;
+      border-radius: 3px;
       font-family: var(--font-mono);
       font-size: 0.75rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .embed-close:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: #ef4444;
-      color: #ef4444;
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
     }
 
     #embed-frame {
@@ -390,9 +391,9 @@
       width: 100%;
       text-align: center;
       font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: #475569;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--card-border);
       padding-top: 1.5rem;
     }
   </style>
@@ -528,34 +529,34 @@
             </div>
             <span id="badge-wa" class="card-badge badge-online">[ONLINE 24/7]</span>
           </div>
-          <h2 class="card-title">Official WhatsApp Web</h2>
-          <p class="card-desc">Isolated desktop browser streaming official web.whatsapp.com with persistent session pairing.</p>
+          <h2 class="card-title">WhatsApp Terminal Client</h2>
+          <p class="card-desc">Low-latency, keyboard-driven WhatsApp TUI client (whats-cli) running inside persistent tmux session with zero video overhead.</p>
           <div class="telemetry-box">
             <div class="telemetry-row">
-              <span class="telemetry-label">INGRESS:</span>
-              <span class="telemetry-val">https://wa.hsrlhfz.stream</span>
+              <span class="telemetry-label">LAUNCH:</span>
+              <span class="telemetry-val">Run 'whatsapp' in Terminal</span>
             </div>
             <div class="telemetry-row">
-              <span class="telemetry-label">GATEWAY:</span>
-              <span>127.0.0.1:6081 (wa-browser)</span>
+              <span class="telemetry-label">ENGINE:</span>
+              <span>whats-cli (whatsmeow Go core)</span>
             </div>
             <div class="telemetry-row">
-              <span class="telemetry-label">AUTH:</span>
-              <span>admin / termux2026</span>
+              <span class="telemetry-label">PERSIST:</span>
+              <span>~/.config/whats-cli/session.db</span>
             </div>
           </div>
         </div>
         <div class="card-actions">
-          <a href="https://wa.hsrlhfz.stream/vnc.html?autoconnect=true&resize=remote" target="_blank" rel="noopener" class="btn-launch">
-            <span>Launch WhatsApp</span>
+          <a href="https://term.hsrlhfz.stream" target="_blank" rel="noopener" class="btn-launch">
+            <span>Open in Terminal</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
               <polyline points="15 3 21 3 21 9"></polyline>
               <line x1="10" y1="14" x2="21" y2="3"></line>
             </svg>
           </a>
-          <button onclick="openEmbeddedFrame('https://wa.hsrlhfz.stream/vnc.html?autoconnect=true&resize=remote')" class="btn-sub" title="Launch inside embedded frame">Frame</button>
-          <a href="wa.html" class="btn-sub" title="Open WhatsApp standalone portal">Portal</a>
+          <button onclick="openEmbeddedFrame('https://term.hsrlhfz.stream')" class="btn-sub" title="Launch inside embedded frame">Frame</button>
+          <a href="wa.html" class="btn-sub" title="Open WhatsApp standalone portal">Guide</a>
         </div>
       </div>
 
@@ -635,13 +636,13 @@
             btnTermFallback.style.display = 'inline-flex';
             if (telemetryTermFailover) {
               telemetryTermFailover.innerText = 'Fallback Tunnel Active';
-              telemetryTermFailover.style.color = 'var(--emerald)';
+              telemetryTermFailover.style.color = 'var(--accent-green)';
             }
           } else {
             btnTermFallback.style.display = 'none';
             if (telemetryTermFailover) {
               telemetryTermFailover.innerText = 'Dual-Route Armed';
-              telemetryTermFailover.style.color = 'var(--cyan)';
+              telemetryTermFailover.style.color = 'var(--accent-green)';
             }
           }
         }
@@ -662,12 +663,14 @@
         // WhatsApp Status
         const waUrl = files['wa_tunnel.txt'] ? files['wa_tunnel.txt'].content.trim() : null;
         const telemetryWa = document.getElementById('telemetry-wa-status');
-        if (waUrl && waUrl.startsWith('http')) {
-          telemetryWa.innerText = 'Active Tunnel Connected';
-          telemetryWa.style.color = 'var(--emerald)';
-        } else {
-          telemetryWa.innerText = 'Direct VPS Supervised';
-          telemetryWa.style.color = 'var(--blue)';
+        if (telemetryWa) {
+          if (waUrl && waUrl.startsWith('http')) {
+            telemetryWa.innerText = 'Active Tunnel Connected';
+            telemetryWa.style.color = 'var(--accent-green)';
+          } else {
+            telemetryWa.innerText = 'Direct VPS Supervised';
+            telemetryWa.style.color = 'var(--accent-blue)';
+          }
         }
       } catch (_) {
         // Silently preserve static display on network or rate limit hiccup
