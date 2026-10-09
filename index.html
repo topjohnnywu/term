@@ -938,12 +938,6 @@
       btn.innerText = 'VERIFYING...';
       err.innerText = '';
 
-      // Direct emergency offline bypass token check
-      if (pin === 'e48b112007d98758d745b82e2052c93d') {
-        unlockPortal('Bypass verified! Initializing Command Deck...');
-        return;
-      }
-
       for (const gw of [activeGatewayUrl, ...PORTAL_GATEWAYS.filter(g => g !== activeGatewayUrl)]) {
         try {
           const res = await fetch(gw + '/api/portal/verify', {
