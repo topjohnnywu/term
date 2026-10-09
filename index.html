@@ -396,9 +396,206 @@
       border-top: 1px solid var(--card-border);
       padding-top: 1.5rem;
     }
+
+    /* Zero-Trust Portal Lock Overlay */
+    #portal-auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000000;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #portal-auth-overlay.unlocked {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .auth-card {
+      background: #050505;
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      padding: 2.25rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: left;
+      position: relative;
+    }
+
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+    }
+
+    .auth-header {
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1rem;
+    }
+
+    .auth-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent-green);
+      background: var(--accent-green-dim);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .auth-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+    }
+
+    .auth-sub {
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+    }
+
+    .pin-box {
+      margin-bottom: 1rem;
+    }
+
+    #portal-otp-input {
+      width: 100%;
+      background: #000000;
+      border: 1px solid var(--card-border);
+      border-radius: 3px;
+      padding: 0.85rem 1rem;
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      text-align: center;
+      letter-spacing: 6px;
+      font-weight: 700;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #portal-otp-input:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.25);
+    }
+
+    .auth-policy-tag {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 1.25rem;
+    }
+
+    .auth-policy-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+
+    #portal-btn-verify {
+      width: 100%;
+      background: #000000;
+      color: var(--accent-green);
+      border: 1px solid var(--accent-green);
+      padding: 0.75rem 1rem;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    #portal-btn-verify:hover {
+      background: var(--accent-green);
+      color: #000000;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+    }
+
+    .auth-err {
+      color: var(--accent-red);
+      font-size: 0.75rem;
+      margin-top: 8px;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    .auth-status {
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .auth-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse 1.5s infinite;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Zero-Trust Portal Verification Overlay -->
+  <div id="portal-auth-overlay">
+    <div class="auth-card">
+      <div class="auth-header">
+        <span class="auth-badge">ZERO-TRUST // COMMAND DECK</span>
+        <h1 class="auth-title">CLEARANCE REQUIRED</h1>
+      </div>
+      <p class="auth-sub">
+        Per-load verification armed. A fresh approval challenge has been dispatched to your authorized device via <strong>ntfy</strong>.<br>Tap <strong>Approve Portal</strong> on your phone or enter the 6-digit PIN below.
+      </p>
+
+      <form id="portal-verify-form" onsubmit="handlePortalVerify(event)">
+        <div class="pin-box">
+          <input type="text" id="portal-otp-input" maxlength="32" placeholder="000000" autofocus autocomplete="one-time-code" required>
+        </div>
+        <div class="auth-policy-tag">
+          <span class="auth-policy-dot"></span>
+          <span>RE-VERIFIED ON EVERY RELOAD &amp; NEW TAB</span>
+        </div>
+        <button type="submit" id="portal-btn-verify">VERIFY &amp; UNLOCK</button>
+        <div class="auth-err" id="portal-auth-err"></div>
+      </form>
+
+      <div class="auth-status">
+        <div class="auth-pulse"></div>
+        <span id="portal-status-text">Dispatching ntfy challenge to phone...</span>
+      </div>
+    </div>
+  </div>
 
   <!-- Top HUD Bar -->
   <header>
@@ -453,7 +650,7 @@
             </div>
             <div class="telemetry-row">
               <span class="telemetry-label">AUTH:</span>
-              <span>admin / termux2026</span>
+              <span>admin / b@t@lmineral2@026</span>
             </div>
             <div class="telemetry-row">
               <span class="telemetry-label">FAILOVER:</span>
@@ -677,6 +874,113 @@
       }
     }
     checkTelemetry();
+
+    // --- Zero-Trust Portal 2FA Verification (Per-load Armed) ---
+    const PORTAL_GATEWAYS = [
+      'https://term.hsrlhfz.stream',
+      'https://ide.hsrlhfz.stream'
+    ];
+    let activeChallengeId = null;
+    let activeGatewayUrl = PORTAL_GATEWAYS[0];
+    let pollTimer = null;
+
+    async function initiatePortal2FA() {
+      const statusText = document.getElementById('portal-status-text');
+      statusText.innerText = 'Dispatching ntfy challenge to phone...';
+
+      for (const gw of PORTAL_GATEWAYS) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 4000);
+          const res = await fetch(gw + '/api/portal/challenge', {
+            method: 'POST',
+            signal: controller.signal
+          });
+          clearTimeout(timeout);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.challengeId) {
+              activeChallengeId = data.challengeId;
+              activeGatewayUrl = gw;
+              statusText.innerText = 'Challenge dispatched // Awaiting phone approval or PIN...';
+              startPolling();
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+      statusText.innerText = 'Direct tunnels unreachable. Enter PIN or bypass code below.';
+    }
+
+    function startPolling() {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(async () => {
+        if (!activeChallengeId) return;
+        try {
+          const res = await fetch(activeGatewayUrl + '/api/portal/poll?id=' + encodeURIComponent(activeChallengeId));
+          if (res.ok) {
+            const data = await res.json();
+            if (data.approved) {
+              unlockPortal('Approved on phone! Initializing Command Deck...');
+            }
+          }
+        } catch (_) {}
+      }, 1500);
+    }
+
+    async function handlePortalVerify(e) {
+      e.preventDefault();
+      const pin = document.getElementById('portal-otp-input').value.trim();
+      const btn = document.getElementById('portal-btn-verify');
+      const err = document.getElementById('portal-auth-err');
+      btn.disabled = true;
+      btn.innerText = 'VERIFYING...';
+      err.innerText = '';
+
+      // Direct emergency offline bypass token check
+      if (pin === 'e48b112007d98758d745b82e2052c93d') {
+        unlockPortal('Bypass verified! Initializing Command Deck...');
+        return;
+      }
+
+      for (const gw of [activeGatewayUrl, ...PORTAL_GATEWAYS.filter(g => g !== activeGatewayUrl)]) {
+        try {
+          const res = await fetch(gw + '/api/portal/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: activeChallengeId, code: pin })
+          });
+          const data = await res.json();
+          if (data.success) {
+            unlockPortal('Access granted! Initializing Command Deck...');
+            return;
+          } else if (data.error) {
+            err.innerText = data.error;
+            btn.disabled = false;
+            btn.innerText = 'VERIFY & UNLOCK';
+            return;
+          }
+        } catch (_) {}
+      }
+      err.innerText = 'Invalid verification code or gateway offline';
+      btn.disabled = false;
+      btn.innerText = 'VERIFY & UNLOCK';
+    }
+
+    function unlockPortal(msg) {
+      if (pollTimer) clearInterval(pollTimer);
+      const statusText = document.getElementById('portal-status-text');
+      const btn = document.getElementById('portal-btn-verify');
+      if (statusText) statusText.innerText = msg;
+      if (btn) btn.innerText = 'ACCESS GRANTED';
+      setTimeout(() => {
+        const overlay = document.getElementById('portal-auth-overlay');
+        if (overlay) overlay.classList.add('unlocked');
+      }, 400);
+    }
+
+    // Trigger challenge immediately on load (each reload is challenged anew)
+    initiatePortal2FA();
   </script>
 </body>
 </html>
