@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WhatsApp Terminal Hub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      color: #e6edf3;
+      font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: #050505;
+      border: 1px solid #1c1c1c;
+      border-radius: 4px;
+      padding: 2.25rem 2rem;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: none;
+      text-align: left;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(74, 222, 128, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2rem;
+      font-family: inherit;
+    }
+    h1 { font-size: 1.35rem; margin-bottom: 0.5rem; color: #ffffff; font-weight: 700; font-family: inherit; }
+    p { font-size: 0.85rem; color: #8b949e; margin-bottom: 1.2rem; line-height: 1.5; font-family: inherit; }
+    .command-box {
+      background: #000000;
+      border: 1px solid #1c1c1c;
+      border-radius: 3px;
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #4ade80;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .steps {
+      list-style: none;
+      margin-bottom: 1.8rem;
+    }
+    .steps li {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: inherit;
+    }
+    .steps li span.step-num {
+      color: #4ade80;
+      font-weight: 700;
+    }
+    code {
+      background: #0a0a0a;
+      border: 1px solid #1c1c1c;
+      padding: 1px 4px;
+      border-radius: 2px;
+      color: #4ade80;
+      font-family: inherit;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 1rem;
+    }
+    .btn {
+      display: inline-block;
+      background: #000000;
+      color: #4ade80;
+      border: 1px solid #4ade80;
+      font-weight: 600;
+      padding: 0.65rem 1.2rem;
+      border-radius: 3px;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      text-align: center;
+      flex: 1;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: #4ade80;
+      color: #000000;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+    }
+    .btn-secondary {
+      background: #000000;
+      border: 1px solid #1c1c1c;
+      color: #8b949e;
+    }
+    .btn-secondary:hover {
+      background: #0d0d0d;
+      border-color: #262626;
+      color: #e6edf3;
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">WHATSAPP TERMINAL CLIENT</div>
+    <h1>WhatsApp Terminal Hub</h1>
+    <p>Zero-latency, keyboard-driven WhatsApp TUI running inside your persistent 24/7 Web Terminal session.</p>
+
+    <div class="command-box">
+      <span>$ whatsapp</span>
+    </div>
+
+    <ul class="steps">
+      <li><span class="step-num">1.</span> Launch Web Terminal using the button below.</li>
+      <li><span class="step-num">2.</span> Type <code>whatsapp</code> and press Enter.</li>
+      <li><span class="step-num">3.</span> On first run, scan the QR code via WhatsApp &gt; Linked Devices.</li>
+      <li><span class="step-num">4.</span> Session persists automatically in SQLite database.</li>
+    </ul>
+
+    <div class="btn-group">
+      <a href="https://term.hsrlhfz.stream" target="_blank" rel="noopener" class="btn">Launch Terminal</a>
+      <a href="index.html" class="btn btn-secondary">Command Deck</a>
+    </div>
+  </div>
+</body>
+</html>

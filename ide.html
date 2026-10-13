@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cloud IDE Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      color: #e6edf3;
+      font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      -webkit-font-smoothing: antialiased;
+    }
+    #loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 1.5rem;
+    }
+    .card {
+      background: #050505;
+      border: 1px solid #1c1c1c;
+      border-radius: 4px;
+      padding: 2.25rem 2rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: none;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(74, 222, 128, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.2rem;
+      font-family: inherit;
+    }
+    .badge.offline {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .spinner {
+      border: 3px solid #1c1c1c;
+      border-top: 3px solid #4ade80;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    h1 { font-size: 1.35rem; margin-bottom: 0.5rem; color: #ffffff; font-weight: 700; font-family: inherit; }
+    p { font-size: 0.85rem; color: #8b949e; margin-bottom: 1.5rem; line-height: 1.5; font-family: inherit; }
+    .btn {
+      display: inline-block;
+      background: #000000;
+      color: #4ade80;
+      border: 1px solid #4ade80;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: #4ade80;
+      color: #000000;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+    }
+    .btn-secondary {
+      background: #000000;
+      color: #8b949e;
+      border: 1px solid #1c1c1c;
+      margin-left: 0.5rem;
+    }
+    .btn-secondary:hover {
+      background: #0d0d0d;
+      color: #e6edf3;
+      border-color: #262626;
+      box-shadow: none;
+    }
+    #action-area { display: none; margin-top: 1rem; }
+    #ide-frame {
+      display: none;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #controls {
+      display: none;
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: #000000;
+      border: 1px solid #1c1c1c;
+      border-radius: 3px;
+      padding: 4px 8px;
+      gap: 6px;
+      align-items: center;
+    }
+    #controls a, #controls button {
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 11.5px;
+      font-family: inherit;
+      padding: 4px 8px;
+      border-radius: 2px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    #controls a:hover, #controls button:hover {
+      color: #4ade80;
+      background: #0d0d0d;
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="card">
+      <div id="badge" class="badge">SECURE GATEWAY</div>
+      <div id="spinner" class="spinner"></div>
+      <h1 id="title">Connecting to Code Server</h1>
+      <p id="status">Resolving active tunnel session...</p>
+      <div id="action-area">
+        <a id="retry-btn" href="javascript:location.reload()" class="btn">Retry</a>
+        <a href="index.html" class="btn btn-secondary">Open Terminal</a>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="ide-frame" allow="clipboard-read; clipboard-write"></iframe>
+
+  <div id="controls">
+    <button onclick="reloadFrame()" title="Reload IDE">↻ Reload</button>
+    <a id="popout-link" href="#" target="_blank" title="Open directly in new tab">↗ Popout</a>
+    <a href="index.html" title="Switch to Terminal">Terminal</a>
+    <a href="wa.html" title="Switch to WhatsApp">WhatsApp</a>
+  </div>
+
+  <script>
+    const GIST_ID = "b491ad614bb910c7689650f63f4c9fcb";
+    let activeUrl = null;
+
+    function reloadFrame() {
+      const frame = document.getElementById("ide-frame");
+      if (activeUrl) {
+        frame.src = activeUrl;
+      } else {
+        location.reload();
+      }
+    }
+
+    async function init() {
+      const statusEl = document.getElementById("status");
+      const titleEl = document.getElementById("title");
+      const badgeEl = document.getElementById("badge");
+      const actionEl = document.getElementById("action-area");
+      const spinner = document.getElementById("spinner");
+      const frame = document.getElementById("ide-frame");
+      const loader = document.getElementById("loader");
+      const controls = document.getElementById("controls");
+      const popoutLink = document.getElementById("popout-link");
+
+      try {
+        const res = await fetch("https://api.github.com/gists/" + GIST_ID + "?nocache=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        const url = (data.files && data.files["ide_tunnel.txt"]) ? data.files["ide_tunnel.txt"].content.trim() : null;
+
+        if (!url || !url.startsWith("http")) {
+          badgeEl.className = "badge offline";
+          badgeEl.innerText = "ACCESS DISABLED";
+          titleEl.innerText = "Code Server Offline";
+          statusEl.innerText = 'Run "./start-ide" in Termux on your Android device to unlock access.';
+          spinner.style.display = "none";
+          actionEl.style.display = "block";
+          return;
+        }
+
+        // Redirect top-level window directly so cookies, auth, and clipboard work seamlessly
+        window.location.replace(url);
+        return;
+
+      } catch (err) {
+        badgeEl.className = "badge offline";
+        badgeEl.innerText = "ERROR";
+        titleEl.innerText = "Connection Failed";
+        statusEl.innerText = "Error resolving session: " + err.message;
+        spinner.style.display = "none";
+        actionEl.style.display = "block";
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
