@@ -715,6 +715,50 @@
         </div>
       </div>
 
+      <!-- Card 3: Google Antigravity AI -->
+      <div class="stark-card">
+        <div>
+          <div class="card-head">
+            <div class="card-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+            <span class="card-badge badge-secured">[AI CORE 2.0]</span>
+          </div>
+          <h2 class="card-title">Google Antigravity AI</h2>
+          <p class="card-desc">Autonomous agentic AI suite &amp; daemon on Ubuntu VPS. Accessible via Zscaler-safe reverse proxy.</p>
+          <div class="telemetry-box">
+            <div class="telemetry-row">
+              <span class="telemetry-label">INGRESS:</span>
+              <span class="telemetry-val">ide.hsrlhfz.stream/proxy/46680/</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">DAEMON:</span>
+              <span>Port 46680 (agy --hub)</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">STATUS:</span>
+              <span id="telemetry-agy-status" style="color:var(--accent-green)">Live &amp; Authenticated</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a href="https://ide.hsrlhfz.stream/proxy/46680/" target="_blank" rel="noopener" class="btn-launch" id="btn-agy-launch">
+            <span>Launch AI Hub</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <button onclick="openEmbeddedFrame('https://ide.hsrlhfz.stream/proxy/46680/')" class="btn-sub" title="Launch inside embedded frame">Frame</button>
+          <a href="agy.html" class="btn-sub" title="Open Antigravity portal bookmark">Portal</a>
+        </div>
+      </div>
+
       <!-- Card 4: WhatsApp Web Official (RBI Stream) -->
       <div class="stark-card">
         <div>
@@ -868,6 +912,13 @@
             telemetryWa.innerText = 'Direct VPS Supervised';
             telemetryWa.style.color = 'var(--accent-blue)';
           }
+        }
+
+        // Antigravity Telemetry
+        const agyUrl = files['agy_tunnel.txt'] ? files['agy_tunnel.txt'].content.trim() : null;
+        if (agyUrl && agyUrl.startsWith('http')) {
+          const btnAgyLaunch = document.getElementById('btn-agy-launch');
+          if (btnAgyLaunch) btnAgyLaunch.href = agyUrl;
         }
       } catch (_) {
         // Silently preserve static display on network or rate limit hiccup
